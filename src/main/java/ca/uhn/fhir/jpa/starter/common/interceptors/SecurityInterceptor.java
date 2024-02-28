@@ -17,23 +17,25 @@ public class SecurityInterceptor {
 
     /**
      * This interceptor implements HTTP Basic Auth, which specifies that
-     * a username and password are provided in a header called Authorization.
+     * a username and password are provided in a header called authentication.
      */
     @Hook(Pointcut.SERVER_INCOMING_REQUEST_POST_PROCESSED)
     public boolean incomingRequestPostProcessed(
             RequestDetails theRequestDetails, HttpServletRequest theRequest, HttpServletResponse theResponse)
             throws AuthenticationException {
-        String authHeader = theRequest.getHeader("Authorization");
+        String authHeader = theRequest.getHeader("authentication");
 
         // The format of the header must be:
-        // Authorization: Basic [base64 of username:password]
-        if (authHeader == null || authHeader.startsWith("Basic ") == false) {
-            throw new AuthenticationException(Msg.code(642) + "Missing or invalid Authorization header");
+        // authentication: username:password
+        if (authHeader == null) {
+            throw new AuthenticationException(Msg.code(642) + "Missing authentication header");
         }
 
-        String base64 = authHeader.substring("Basic ".length());
-        String base64decoded = new String(Base64.decodeBase64(base64));
-        String[] parts = base64decoded.split(":");
+        System.out.println(authHeader);
+
+        // String base64 = authHeader.substring("Basic ".length());
+        // String base64decoded = new String(Base64.decodeBase64(base64));
+        String[] parts = authHeader.split(":");
 
         String username = parts[0];
         String password = parts[1];
