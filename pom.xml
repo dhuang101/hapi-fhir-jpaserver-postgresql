@@ -72,6 +72,13 @@
           <artifactId>mssql-jdbc</artifactId>
         </dependency>
 
+        <!-- Needed to read .env file -->
+        <dependency>
+            <groupId>io.github.cdimascio</groupId>
+            <artifactId>dotenv-java</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
         <!-- Needed for Email subscriptions -->
         <dependency>
             <groupId>org.simplejavamail</groupId>

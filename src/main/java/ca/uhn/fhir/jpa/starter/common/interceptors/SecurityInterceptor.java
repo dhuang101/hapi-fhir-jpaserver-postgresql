@@ -9,6 +9,7 @@ import ca.uhn.fhir.interceptor.api.Interceptor;
 import ca.uhn.fhir.interceptor.api.Pointcut;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
+import io.github.cdimascio.dotenv.Dotenv;
 
 @Interceptor
 public class SecurityInterceptor {
@@ -21,6 +22,10 @@ public class SecurityInterceptor {
     public boolean incomingRequestPostProcessed(
             RequestDetails theRequestDetails, HttpServletRequest theRequest, HttpServletResponse theResponse)
             throws AuthenticationException {
+        // grab .env variables
+        Dotenv dotenv = null;
+        dotenv = Dotenv.configure().load();
+        // grab password from header
         String authHeader = theRequest.getHeader("authentication");
 
         // The format of the header must be:
@@ -29,14 +34,12 @@ public class SecurityInterceptor {
             throw new AuthenticationException(Msg.code(642) + "Missing authentication header");
         }
 
-        System.out.println(authHeader);
-
         /*
          * Here we test for a hardcoded username & password. This is
          * not typically how you would implement this in a production
          * system of course..
          */
-        if (!authHeader.equals("thepassword")) {
+        if (!authHeader.equals(dotenv.get("HAPI_FHIR_AUTH"))) {
             throw new AuthenticationException(Msg.code(643) + "Incorrect password");
         }
 
